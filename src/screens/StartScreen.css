@@ -1,0 +1,63 @@
+.start-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-content {
+  text-align: center;
+  padding: 40px;
+  max-width: 400px;
+}
+
+.logo {
+  margin-bottom: 30px;
+}
+
+.logo-icon {
+  font-size: 80px;
+  margin-bottom: 10px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.logo h1 {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  line-height: 1.1;
+  text-shadow: 3px 3px 0 #051e22, 0 0 20px rgba(45, 212, 191, 0.4);
+  margin: 0;
+}
+
+.tagline {
+  font-size: 18px;
+  color: #99f6e4;
+  margin-bottom: 40px;
+  opacity: 0.95;
+}
+
+.instructions {
+  margin-top: 40px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.instructions p {
+  font-size: 14px;
+  color: #ccfbf1;
+  opacity: 0.85;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}

@@ -1,0 +1,72 @@
+.timer-container {
+  position: relative;
+}
+
+.timer-ring {
+  width: 55px;
+  height: 55px;
+  position: relative;
+}
+
+.timer-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.timer-bg {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.3);
+  stroke-width: 8;
+}
+
+.timer-progress {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
+}
+
+.timer-ring.warning .timer-progress {
+  stroke: #f97316;
+}
+
+.timer-ring.danger .timer-progress {
+  stroke: #ef4444;
+  animation: pulse-red 0.5s ease-in-out infinite;
+}
+
+.timer-display {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulse-red {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 520px) {
+  .timer-ring {
+    width: 50px;
+    height: 50px;
+  }
+
+  .timer-display {
+    font-size: 18px;
+  }
+}

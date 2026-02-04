@@ -1,0 +1,108 @@
+/* Balloon Container */
+.balloon {
+  position: absolute;
+  width: 70px;
+  height: 85px;
+  cursor: pointer;
+  z-index: 4;
+  transform: translateX(-50%);
+}
+
+.balloon-body {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.balloon-shape {
+  width: 70px;
+  height: 78px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    inset -10px -8px 20px rgba(0, 0, 0, 0.2),
+    inset 10px 8px 20px rgba(255, 255, 255, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.balloon-shape::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 14px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+}
+
+.balloon-string {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  width: 2px;
+  height: 25px;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translateX(-50%);
+}
+
+.balloon-answer {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Colors */
+.balloon.red .balloon-shape { background: linear-gradient(135deg, #f87171, #dc2626); }
+.balloon.blue .balloon-shape { background: linear-gradient(135deg, #60a5fa, #2563eb); }
+.balloon.green .balloon-shape { background: linear-gradient(135deg, #4ade80, #16a34a); }
+.balloon.yellow .balloon-shape { background: linear-gradient(135deg, #fde047, #eab308); }
+.balloon.purple .balloon-shape { background: linear-gradient(135deg, #c084fc, #9333ea); }
+.balloon.orange .balloon-shape { background: linear-gradient(135deg, #fb923c, #ea580c); }
+.balloon.pink .balloon-shape { background: linear-gradient(135deg, #f472b6, #db2777); }
+.balloon.cyan .balloon-shape { background: linear-gradient(135deg, #22d3ee, #0891b2); }
+
+/* States */
+.balloon:hover {
+  transform: translateX(-50%) scale(1.05);
+}
+
+.balloon.greyed-out {
+  pointer-events: none;
+  opacity: 0.4;
+  filter: grayscale(80%);
+}
+
+.balloon.popping {
+  opacity: 0;
+  transform: translateX(-50%) scale(1.5);
+  transition: all 0.2s ease-out;
+}
+
+.balloon.shake {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(-50%); }
+  25% { transform: translateX(calc(-50% - 5px)); }
+  75% { transform: translateX(calc(-50% + 5px)); }
+}
+
+/* Responsive */
+@media (max-width: 520px) {
+  .balloon {
+    width: 60px;
+    height: 75px;
+  }
+  .balloon-shape {
+    width: 60px;
+    height: 68px;
+  }
+  .balloon-answer {
+    font-size: 14px;
+  }
+}

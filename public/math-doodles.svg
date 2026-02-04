@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">
+  <defs>
+    <g id="symbols" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.2" stroke-linecap="round">
+      <!-- plus -->
+      <line x1="20" y1="35" x2="20" y2="55"/>
+      <line x1="10" y1="45" x2="30" y2="45"/>
+      <!-- minus -->
+      <line x1="80" y1="45" x2="110" y2="45"/>
+      <!-- times (x) -->
+      <line x1="150" y1="35" x2="165" y2="55"/>
+      <line x1="165" y1="35" x2="150" y2="55"/>
+      <!-- divide -->
+      <line x1="200" y1="30" x2="200" y2="60"/>
+      <circle cx="200" cy="25" r="2.5" fill="rgba(255,255,255,0.06)"/>
+      <circle cx="200" cy="65" r="2.5" fill="rgba(255,255,255,0.06)"/>
+      <!-- equals -->
+      <line x1="240" y1="40" x2="275" y2="40"/>
+      <line x1="240" y1="52" x2="275" y2="52"/>
+      <!-- number 3 -->
+      <path d="M 30 100 Q 45 95 45 108 Q 45 120 30 125 Q 45 130 45 142 Q 45 155 30 150" stroke="rgba(255,255,255,0.05)"/>
+      <!-- number 4 (simple) -->
+      <line x1="75" y1="150" x2="75" y2="100"/>
+      <line x1="75" y1="120" x2="105" y2="120"/>
+      <line x1="105" y1="100" x2="105" y2="150"/>
+      <!-- angle bracket -->
+      <path d="M 140 100 L 160 125 L 140 150" fill="none" stroke="rgba(255,255,255,0.05)"/>
+      <!-- circle (shape) -->
+      <circle cx="200" cy="125" r="18" fill="none" stroke="rgba(255,255,255,0.04)"/>
+      <!-- square -->
+      <rect x="250" y="105" width="25" height="25" fill="none" stroke="rgba(255,255,255,0.04)" rx="2"/>
+      <!-- plus (second tile) -->
+      <line x1="15" y1="185" x2="15" y2="205"/>
+      <line x1="5" y1="195" x2="25" y2="195"/>
+      <!-- 1 -->
+      <line x1="50" y1="220" x2="50" y2="170"/>
+      <!-- 2 -->
+      <path d="M 85 172 Q 105 172 105 190 Q 105 205 85 218 L 110 218" fill="none" stroke="rgba(255,255,255,0.04)"/>
+      <!-- equals (vertical area) -->
+      <line x1="140" y1="180" x2="175" y2="180"/>
+      <line x1="140" y1="192" x2="175" y2="192"/>
+      <!-- multiply again -->
+      <line x1="200" y1="182" x2="212" y2="208"/>
+      <line x1="212" y1="182" x2="200" y2="208"/>
+      <!-- division dot -->
+      <circle cx="255" cy="195" r="3" fill="rgba(255,255,255,0.05)"/>
+      <!-- triangle (shape) -->
+      <path d="M 25 260 L 55 300 L 55 220 Z" fill="none" stroke="rgba(255,255,255,0.04)"/>
+      <!-- plus -->
+      <line x1="90" y1="285" x2="90" y2="305"/>
+      <line x1="80" y1="295" x2="100" y2="295"/>
+      <!-- minus -->
+      <line x1="130" y1="295" x2="160" y2="295"/>
+      <!-- x -->
+      <line x1="190" y1="285" x2="205" y2="305"/>
+      <line x1="205" y1="285" x2="190" y2="305"/>
+      <!-- = -->
+      <line x1="230" y1="290" x2="265" y2="290"/>
+      <line x1="230" y1="302" x2="265" y2="302"/>
+      <!-- number 5 -->
+      <path d="M 280 240 L 280 260 L 295 260 Q 310 260 310 275 Q 310 290 295 290 L 280 290" fill="none" stroke="rgba(255,255,255,0.04)"/>
+    </g>
+  </defs>
+  <use href="#symbols"/>
+  <!-- second pass offset for denser scatter -->
+  <use href="#symbols" transform="translate(160, 160)"/>
+</svg>

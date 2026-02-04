@@ -1,0 +1,62 @@
+.grade-select-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.grade-select-screen .back-btn {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  color: #ccfbf1;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.grade-select-screen .back-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.grade-select-content {
+  text-align: center;
+  padding: 40px;
+  max-width: 420px;
+}
+
+.grade-title {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-shadow: 3px 3px 0 #051e22, 0 0 20px rgba(45, 212, 191, 0.4);
+  margin: 0 0 15px 0;
+  line-height: 1.2;
+}
+
+.grade-subtitle {
+  font-size: 18px;
+  color: #99f6e4;
+  margin-bottom: 40px;
+  opacity: 0.95;
+}
+
+.grade-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.grade-btn {
+  min-width: 220px;
+}

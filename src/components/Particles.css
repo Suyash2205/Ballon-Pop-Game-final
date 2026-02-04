@@ -1,0 +1,28 @@
+.particles-container {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.particle {
+  position: absolute;
+  animation: particle-burst 0.6s ease-out forwards;
+}
+
+.particle.coin-burst {
+  left: 0;
+  top: 0;
+  font-size: 20px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes particle-burst {
+  0% {
+    transform: translate(-50%, -50%) translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) scale(0.5) rotate(180deg);
+    opacity: 0;
+  }
+}

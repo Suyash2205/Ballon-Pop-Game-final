@@ -1,0 +1,32 @@
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  /* Deep teal/blue-green gradient + subtle math doodles (symbols, numbers, shapes) */
+  background:
+    url('/math-doodles.svg') repeat,
+    linear-gradient(180deg, #051e22 0%, #073642 25%, #0a4d52 50%, #064048 100%);
+  background-color: #064048;
+  color: #ffffff;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Prevent text selection on game elements */
+button,
+div {
+  -webkit-tap-highlight-color: transparent;
+}
