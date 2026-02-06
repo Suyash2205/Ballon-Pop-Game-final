@@ -5,7 +5,7 @@ import Balloon from '../components/Balloon';
 import Feedback from '../components/Feedback';
 import Particles from '../components/Particles';
 import Confetti from '../components/Confetti';
-import { generateQuestionForGrade } from '../utils/mathGenerator';
+import { generateQuestionForGrade, resetQuestionSession } from '../utils/mathGenerator';
 import audioSystem from '../utils/audioSystem';
 import './GameScreen.css';
 
@@ -40,15 +40,16 @@ const SECOND_WRONG_MESSAGES = [
   "Keep going, you're doing great!"
 ];
 
-const MAX_TIME = 10;
-const BALLOON_DURATION_SLOW = 28;
+const MAX_TIME_GRADE_3 = 30;
+const MAX_TIME_GRADES_4_7 = 30;
+const BALLOON_DURATION_SLOW = 42;
 const BALLOON_DURATION_FAST = 18;
-const BALLOON_START_DELAY_SLOW = 250;
+const BALLOON_START_DELAY_SLOW = 320;
 const BALLOON_START_DELAY_FAST = 175;
 
 const GameScreen = ({ grade, onGameOver, onBackToGrades }) => {
-  const useSlowerBalloons = grade >= 4 && grade <= 7;
-  const maxTimeForGrade = MAX_TIME;
+  const useSlowerBalloons = grade >= 3 && grade <= 7;
+  const maxTimeForGrade = MAX_TIME_GRADES_4_7;
   // Game state
   const [score, setScore] = useState(0);
   const [questionNumber, setQuestionNumber] = useState(0);
@@ -64,6 +65,7 @@ const GameScreen = ({ grade, onGameOver, onBackToGrades }) => {
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [balloonKey, setBalloonKey] = useState(0);
   const [balloonsDisabled, setBalloonsDisabled] = useState(false);
+  const [forceFlyAway, setForceFlyAway] = useState(false);
   const [attempts, setAttempts] = useState(0); // Track attempts per question
   const [wrongBalloons, setWrongBalloons] = useState([]); // Track which balloons were clicked wrong
 
@@ -159,6 +161,7 @@ const GameScreen = ({ grade, onGameOver, onBackToGrades }) => {
     setQuestionNumber(newQuestionNumber);
     setBalloonKey((prev) => prev + 1);
     setBalloonsDisabled(false);
+    setForceFlyAway(false);
     setAttempts(0);
     setWrongBalloons([]);
 
@@ -245,6 +248,7 @@ const GameScreen = ({ grade, onGameOver, onBackToGrades }) => {
   const handleMissedQuestion = useCallback(() => {
     stopTimer();
     setBalloonsDisabled(true);
+    setForceFlyAway(true);
     setStreak(0);
     setShowStreak(false);
 
@@ -290,6 +294,8 @@ const GameScreen = ({ grade, onGameOver, onBackToGrades }) => {
   // Initialize game
   useEffect(() => {
     audioSystem.init();
+    // New play session: clear question history to prevent repeats in this round.
+    resetQuestionSession();
     nextQuestion();
     
     return () => {
@@ -361,9 +367,12 @@ const GameScreen = ({ grade, onGameOver, onBackToGrades }) => {
     setTimeRemaining(maxTimeForGrade);
     setMaxTime(maxTimeForGrade);
     setQuestionNumber(1);
+    // New round = new session for question uniqueness.
+    resetQuestionSession();
     setCurrentQuestion(generateQuestionForGrade(grade));
     setBalloonKey((k) => k + 1);
     setBalloonsDisabled(false);
+    setForceFlyAway(false);
     setAttempts(0);
     setWrongBalloons([]);
     setIsPaused(false);
@@ -453,6 +462,7 @@ const GameScreen = ({ grade, onGameOver, onBackToGrades }) => {
                 disabled={balloonsDisabled || isPaused || wrongBalloons.includes(answer)}
                 greyedOut={wrongBalloons.includes(answer)}
                 paused={isPaused}
+                forceFlyAway={forceFlyAway && !isPaused}
               />
             ))
           )}

@@ -3,10 +3,12 @@ import './Balloon.css';
 
 const BALLOON_COLORS = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'cyan'];
 
-// Ease-out: fast start (rising within ~2s), gentle slowdown near top
-const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+// Ease-out sine: slows earlier for a smoother glide near the top.
+const easeOutSine = (t) => Math.sin((t * Math.PI) / 2);
+// Ease-in quad: gentle acceleration (used for fly-away).
+const easeInQuad = (t) => t * t;
 
-const Balloon = ({ answer, isCorrect, index, totalBalloons, duration, startDelay, onPop, disabled, greyedOut, paused }) => {
+const Balloon = ({ answer, isCorrect, index, totalBalloons, duration, startDelay, onPop, disabled, greyedOut, paused, forceFlyAway }) => {
   const [state, setState] = useState('floating');
   const [color] = useState(() => BALLOON_COLORS[Math.floor(Math.random() * BALLOON_COLORS.length)]);
   const [bottomPosition, setBottomPosition] = useState(0);
@@ -19,7 +21,7 @@ const Balloon = ({ answer, isCorrect, index, totalBalloons, duration, startDelay
 
   // Start floating animation: staggered start + ease-out (rise quickly, slow at top)
   useEffect(() => {
-    if (state !== 'floating' || greyedOut || disabled || paused) {
+    if (state !== 'floating' || greyedOut || (disabled && !forceFlyAway) || paused) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -31,9 +33,13 @@ const Balloon = ({ answer, isCorrect, index, totalBalloons, duration, startDelay
       return;
     }
 
-    const totalDistance = 100;
+    // Stop just under the question banner; on timeout, fly up behind it and out.
+    const targetDistance = forceFlyAway ? 135 : 98;
+    const startDistance = bottomPosition;
+    const travelDistance = Math.max(0, targetDistance - startDistance);
     const stepTime = 50;
-    const totalSteps = Math.max(1, (duration * 1000) / stepTime);
+    const effectiveDuration = forceFlyAway ? 1.4 : duration;
+    const totalSteps = Math.max(1, (effectiveDuration * 1000) / stepTime);
     const delay = startDelay ?? 0;
 
     const runInterval = () => {
@@ -41,8 +47,8 @@ const Balloon = ({ answer, isCorrect, index, totalBalloons, duration, startDelay
       intervalRef.current = setInterval(() => {
         stepRef.current += 1;
         const progress = Math.min(1, stepRef.current / totalSteps);
-        const eased = easeOutCubic(progress);
-        const newPos = totalDistance * eased;
+        const eased = forceFlyAway ? easeInQuad(progress) : easeOutSine(progress);
+        const newPos = startDistance + travelDistance * eased;
         setBottomPosition(newPos);
         if (progress >= 1 && intervalRef.current) {
           clearInterval(intervalRef.current);
@@ -67,7 +73,7 @@ const Balloon = ({ answer, isCorrect, index, totalBalloons, duration, startDelay
         intervalRef.current = null;
       }
     };
-  }, [state, greyedOut, disabled, paused, duration, startDelay]);
+  }, [state, greyedOut, disabled, paused, duration, startDelay, forceFlyAway]);
 
   const handleClick = (e) => {
     if (disabled || greyedOut || paused || state !== 'floating') return;

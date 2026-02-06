@@ -4,6 +4,7 @@
    ======================================== */
 
 import { randInt } from './mathGenerator';
+import { nextTemplateIndex } from './questionSessionStore';
 
 // ---- Difficulty config per grade ----
 export function getDifficultyConfig(grade) {
@@ -22,6 +23,24 @@ export function getDifficultyConfig(grade) {
       return { max: 100, ops: 1, allowNegative: false, allowDecimal: false, allowExponent: false, allowFractions: false };
   }
 }
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+// Small range expansion to increase variety without exceeding grade-safe bounds.
+const jitterRange = (min, max, jitter, hardMin, hardMax) => {
+  const minJ = clamp(min - randInt(0, jitter), hardMin, hardMax);
+  const maxJ = clamp(max + randInt(0, jitter), hardMin, hardMax);
+  return [Math.min(minJ, maxJ), Math.max(minJ, maxJ)];
+};
+
+const maybeSwap = (a, b) => (randInt(0, 1) === 1 ? [b, a] : [a, b]);
+
+const pickTemplate = (grade, templates) => {
+  // Shuffled once per session; cycles through to increase variety
+  // while keeping the same grade-specific templates intact.
+  const idx = nextTemplateIndex(grade, templates.length);
+  return templates[idx]();
+};
 
 // ---- Safe PEMDAS expression evaluator ----
 const OP_ADD = '+';
@@ -212,42 +231,67 @@ function buildMathExpression(config) {
   // Grade 3: single operation only
   if (grade === 3) {
     const type = randInt(1, 3);
-    const a = randInt(1, 50);
-    const b = randInt(1, 50);
-    if (type === 1) return { question: `${a} + ${b} = ?`, answer: a + b };
+    const [aMin, aMax] = jitterRange(1, 50, 5, 1, config.max);
+    const [bMin, bMax] = jitterRange(1, 50, 5, 1, config.max);
+    let a = randInt(aMin, aMax);
+    let b = randInt(bMin, bMax);
+    if (type === 1) {
+      [a, b] = maybeSwap(a, b);
+      return { question: `${a} + ${b} = ?`, answer: a + b };
+    }
     if (type === 2) {
-      const x = randInt(20, 100);
-      const y = randInt(1, Math.min(x, 50));
+      const [xMin, xMax] = jitterRange(20, 100, 5, 20, config.max);
+      let x = randInt(xMin, xMax);
+      let y = randInt(1, Math.min(x, 55));
+      if (y > x) [x, y] = [y, x];
       return { question: `${x} − ${y} = ?`, answer: x - y };
     }
-    const m = randInt(2, 9);
-    const n = randInt(2, 9);
-    return { question: `${m} × ${n} = ?`, answer: m * n };
+    const [mMin, mMax] = jitterRange(2, 9, 1, 2, 9);
+    const [nMin, nMax] = jitterRange(2, 9, 1, 2, 9);
+    const m = randInt(mMin, mMax);
+    const n = randInt(nMin, nMax);
+    const [mm, nn] = maybeSwap(m, n);
+    return { question: `${mm} × ${nn} = ?`, answer: m * n };
   }
 
   // Grade 4: 2 operations, optionally parentheses
   if (grade === 4) {
     const templates = [
       () => {
-        const a = randInt(20, 120);
-        const b = randInt(2, 12);
-        const c = randInt(5, 50);
+        const [aMin, aMax] = jitterRange(20, 120, 10, 10, config.max);
+        const [bMin, bMax] = jitterRange(2, 12, 2, 2, 12);
+        const [cMin, cMax] = jitterRange(5, 50, 5, 5, config.max);
+        let a = randInt(aMin, aMax);
+        let b = randInt(bMin, bMax);
+        let c = randInt(cMin, cMax);
+        [b, c] = maybeSwap(b, c);
         return { q: `${a} + ${b} × ${c} = ?`, a: a + b * c };
       },
       () => {
-        const a = randInt(30, 200);
-        const b = randInt(2, 10);
-        const c = randInt(5, 40);
+        const [aMin, aMax] = jitterRange(30, 200, 15, 20, config.max);
+        const [bMin, bMax] = jitterRange(2, 10, 1, 2, 10);
+        const [cMin, cMax] = jitterRange(5, 40, 5, 5, config.max);
+        const b = randInt(bMin, bMax);
+        // Keep division whole-number for grade 4 (no decimals allowed).
+        const maxQuotient = Math.max(2, Math.floor(aMax / b));
+        const minQuotient = Math.max(2, Math.floor(aMin / b));
+        const q = randInt(minQuotient, Math.max(minQuotient, maxQuotient));
+        const a = b * q;
+        const c = randInt(cMin, cMax);
         return { q: `(${a} ÷ ${b}) + ${c} = ?`, a: Math.floor(a / b) + c };
       },
       () => {
-        const a = randInt(50, 200);
-        const b = randInt(20, 80);
-        const c = randInt(10, 50);
+        const [aMin, aMax] = jitterRange(50, 200, 15, 30, config.max);
+        const [bMin, bMax] = jitterRange(20, 80, 10, 10, config.max);
+        const [cMin, cMax] = jitterRange(10, 50, 5, 10, config.max);
+        let a = randInt(aMin, aMax);
+        let b = randInt(bMin, bMax);
+        if (b > a) [a, b] = [b, a];
+        const c = randInt(cMin, cMax);
         return { q: `${a} − ${b} + ${c} = ?`, a: a - b + c };
       }
     ];
-    const t = templates[randInt(0, templates.length - 1)]();
+    const t = pickTemplate(grade, templates);
     return { question: t.q, answer: t.a };
   }
 
@@ -255,27 +299,42 @@ function buildMathExpression(config) {
   if (grade === 5) {
     const templates = [
       () => {
-        const a = randInt(50, 300);
-        const b = randInt(2, 8);
-        const c = randInt(50, 200);
+        const [aMin, aMax] = jitterRange(50, 300, 20, 40, config.max);
+        const [bMin, bMax] = jitterRange(2, 8, 1, 2, 10);
+        const [cMin, cMax] = jitterRange(50, 200, 15, 20, config.max);
+        const a = randInt(aMin, aMax);
+        const b = randInt(bMin, bMax);
+        const c = randInt(cMin, cMax);
         return { q: `${a} × ${b} − ${c} = ?`, a: a * b - c };
       },
       () => {
-        const a = randInt(100, 400);
-        const b = randInt(3, 12);
-        const c = randInt(2, 8);
-        const d = randInt(10, 80);
+        const [aMin, aMax] = jitterRange(100, 400, 25, 60, config.max);
+        const [bMin, bMax] = jitterRange(3, 12, 2, 3, 12);
+        const [cMin, cMax] = jitterRange(2, 8, 1, 2, 10);
+        const [dMin, dMax] = jitterRange(10, 80, 8, 10, config.max);
+        const b = randInt(bMin, bMax);
+        // Keep division whole-number for grade 5 (no decimals allowed).
+        const maxQuotient = Math.max(3, Math.floor(aMax / b));
+        const minQuotient = Math.max(3, Math.floor(aMin / b));
+        const q = randInt(minQuotient, Math.max(minQuotient, maxQuotient));
+        const a = b * q;
+        const c = randInt(cMin, cMax);
+        const d = randInt(dMin, dMax);
         return { q: `(${a} ÷ ${b}) + ${c} × ${d} = ?`, a: Math.floor(a / b) + c * d };
       },
       () => {
-        const a = randInt(100, 400);
-        const b = randInt(20, 100);
-        const c = randInt(10, 60);
-        const d = randInt(20, 80);
+        const [aMin, aMax] = jitterRange(100, 400, 25, 60, config.max);
+        const [bMin, bMax] = jitterRange(20, 100, 15, 15, config.max);
+        const [cMin, cMax] = jitterRange(10, 60, 8, 10, config.max);
+        const [dMin, dMax] = jitterRange(20, 80, 10, 15, config.max);
+        const a = randInt(aMin, aMax);
+        const b = randInt(bMin, bMax);
+        const c = randInt(cMin, cMax);
+        const d = randInt(dMin, dMax);
         return { q: `${a} − ${b} × ${c} + ${d} = ?`, a: a - b * c + d };
       }
     ];
-    const t = templates[randInt(0, templates.length - 1)]();
+    const t = pickTemplate(grade, templates);
     const ans = typeof t.a === 'number' ? t.a : evaluateExpression(t.q.replace(' = ?', ''));
     return { question: t.q, answer: ans };
   }
@@ -285,29 +344,33 @@ function buildMathExpression(config) {
     const templates = [
       () => {
         const a = randInt(-30, 30);
-        const b = randInt(2, 10);
-        const c = randInt(2, 8);
+        const [bMin, bMax] = jitterRange(2, 10, 1, 2, 12);
+        const [cMin, cMax] = jitterRange(2, 8, 1, 2, 10);
+        const b = randInt(bMin, bMax);
+        const c = randInt(cMin, cMax);
         const expr = `${a} + ${b} × ${c}`;
         return { q: expr + ' = ?', a: evaluateExpression(expr) };
       },
       () => {
         const a = randDecimal(config);
         const b = randDecimal(config);
-        const c = randInt(2, 5);
+        const [cMin, cMax] = jitterRange(2, 5, 1, 2, 6);
+        const c = randInt(cMin, cMax);
         const expr = `${a} + ${b} × ${c}`;
         const val = evaluateExpression(expr);
         return { q: expr + ' = ?', a: Math.round(val * 10) / 10 };
       },
       () => {
         const a = randInt(-20, 20);
-        const b = randInt(2, 8);
+        const [bMin, bMax] = jitterRange(2, 8, 1, 2, 10);
+        const b = randInt(bMin, bMax);
         const c = randDecimal(config);
         const expr = `(${a} ÷ ${b}) + ${c}`;
         const val = Math.floor(a / b) + c;
         return { q: expr + ' = ?', a: Math.round(val * 10) / 10 };
       }
     ];
-    const t = templates[randInt(0, templates.length - 1)]();
+    const t = pickTemplate(grade, templates);
     return { question: t.q, answer: t.a };
   }
 
@@ -332,7 +395,8 @@ function buildMathExpression(config) {
       () => {
         const f1 = randomFraction();
         const f2 = randomFraction();
-        const mult = randInt(6, 24);
+        const [mMin, mMax] = jitterRange(6, 24, 2, 6, 30);
+        const mult = randInt(mMin, mMax);
         const val = (f1.value + f2.value) * mult;
         const q = `(${f1.str} + ${f2.str}) × ${mult} = ?`;
         return { q, a: Math.round(val * 100) / 100 };
@@ -341,8 +405,10 @@ function buildMathExpression(config) {
         const base = randInt(3, 8);
         const exp = 2;
         const sub = randInt(1, base * base - 2);
-        const den = randInt(2, 6);
-        const add = randInt(1, 15);
+        const [dMin, dMax] = jitterRange(2, 6, 1, 2, 8);
+        const [aMin, aMax] = jitterRange(1, 15, 2, 1, 20);
+        const den = randInt(dMin, dMax);
+        const add = randInt(aMin, aMax);
         const expr = `${add} ÷ (${base}² − ${sub}) + ${den}`;
         const val = add / (Math.pow(base, exp) - sub) + den;
         const display = `${add} ÷ (${base}² − ${sub}) + ${den} = ?`;
@@ -355,14 +421,17 @@ function buildMathExpression(config) {
         const s2 = `${b2}²`;
         const v1 = b1 * b1;
         const v2 = b2 * b2;
-        const div = randInt(2, 6);
-        const add = randInt(1, 20);
-        const inner = randInt(4, 16);
+        const [divMin, divMax] = jitterRange(2, 6, 1, 2, 8);
+        const [addMin, addMax] = jitterRange(1, 20, 2, 1, 25);
+        const [innerMin, innerMax] = jitterRange(4, 16, 2, 4, 20);
+        const div = randInt(divMin, divMax);
+        const add = randInt(addMin, addMax);
+        const inner = randInt(innerMin, innerMax);
         const val = (v1 - v2) * (inner / div) + add;
         return { q: `(${s1} − ${s2}) × (${inner} ÷ ${div}) + ${add} = ?`, a: Math.round(val) };
       }
     ];
-    const t = templates[randInt(0, templates.length - 1)]();
+    const t = pickTemplate(grade, templates);
     return { question: t.q, answer: t.a };
   }
 

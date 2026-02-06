@@ -3,6 +3,7 @@
    ======================================== */
 
 import { generateQuestionByGrade } from './difficultyConfig';
+import { buildQuestionKey, getUsedKeySet, resetQuestionSession } from './questionSessionStore';
 
 // Get random integer between min and max (inclusive)
 export const randInt = (min, max) => {
@@ -353,7 +354,26 @@ export const generateQuestion = (difficulty) => {
 
 // Generate a question based on selected grade (Brain Racers grade selection)
 export const generateQuestionForGrade = (grade) => {
-  const result = generateQuestionByGrade(grade);
+  const usedKeys = getUsedKeySet(grade);
+  const maxAttempts = 12;
+  let result = null;
+
+  // Retry a few times to prevent repeats within this play session.
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const candidate = generateQuestionByGrade(grade);
+    const key = buildQuestionKey(candidate.question, candidate.answer);
+    if (!usedKeys.has(key)) {
+      usedKeys.add(key);
+      result = candidate;
+      break;
+    }
+    // If we keep colliding, allow the last one to avoid infinite loops.
+    if (attempt === maxAttempts - 1) {
+      usedKeys.add(key);
+      result = candidate;
+    }
+  }
+
   const distractors = generateDistractors(result.answer);
   const answers = shuffle([result.answer, ...distractors]);
   return {
@@ -362,3 +382,6 @@ export const generateQuestionForGrade = (grade) => {
     answers: answers
   };
 };
+
+// Expose for UI to start a fresh "play session" without storing state in components.
+export { resetQuestionSession };
