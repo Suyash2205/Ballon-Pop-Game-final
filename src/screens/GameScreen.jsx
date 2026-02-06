@@ -56,6 +56,10 @@ const GameScreen = ({ grade, onGameOver, onBackToGrades }) => {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
+  // Keep refs in sync to avoid stale values in delayed callbacks.
+  const scoreRef = useRef(score);
+  const correctAnswersRef = useRef(correctAnswers);
+  const bestStreakRef = useRef(bestStreak);
 
   // Pause state
   const [isPaused, setIsPaused] = useState(false);
@@ -100,6 +104,13 @@ const GameScreen = ({ grade, onGameOver, onBackToGrades }) => {
     return position * balloonStartDelayStep;
   }, [balloonKey, balloonStartDelayStep]);
 
+  // Sync refs to latest values for reliable game-over stats.
+  useEffect(() => {
+    scoreRef.current = score;
+    correctAnswersRef.current = correctAnswers;
+    bestStreakRef.current = bestStreak;
+  }, [score, correctAnswers, bestStreak]);
+
   // Start timer (only runs when not paused)
   const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -142,10 +153,10 @@ const GameScreen = ({ grade, onGameOver, onBackToGrades }) => {
       setShowConfetti(true);
       setTimeout(() => {
         onGameOver({
-          score,
-          correctAnswers,
+          score: scoreRef.current,
+          correctAnswers: correctAnswersRef.current,
           totalQuestions: TOTAL_QUESTIONS,
-          bestStreak,
+          bestStreak: bestStreakRef.current,
           isVictory: true
         });
       }, 2000);
