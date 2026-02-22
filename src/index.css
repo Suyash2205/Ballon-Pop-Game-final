@@ -15,12 +15,14 @@ body,
 body {
   font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont,
     sans-serif;
-  /* Deep teal/blue-green gradient + subtle math doodles (symbols, numbers, shapes) */
+  /* Darker, cooler neon-night theme */
   background:
+    radial-gradient(1200px 600px at 20% 10%, rgba(68, 97, 255, 0.18), transparent 60%),
+    radial-gradient(800px 500px at 80% 20%, rgba(0, 255, 209, 0.14), transparent 55%),
     url('/math-doodles.svg') repeat,
-    linear-gradient(180deg, #051e22 0%, #073642 25%, #0a4d52 50%, #064048 100%);
-  background-color: #064048;
-  color: #ffffff;
+    linear-gradient(180deg, #05070f 0%, #0a0f1f 40%, #0b1528 70%, #07101f 100%);
+  background-color: #05070f;
+  color: #e5e7ff;
   user-select: none;
   -webkit-user-select: none;
 }

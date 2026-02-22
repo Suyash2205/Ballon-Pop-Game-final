@@ -8,11 +8,11 @@
   text-align: center;
   padding: 40px;
   max-width: 400px;
-  background: rgba(5, 30, 34, 0.5);
+  background: rgba(8, 12, 26, 0.6);
   border-radius: 25px;
-  border: 2px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
   backdrop-filter: blur(10px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 18px 50px rgba(2, 6, 23, 0.5);
 }
 
 .gameover-content h2 {
@@ -23,8 +23,8 @@
 }
 
 .gameover-content h2.victory {
-  color: #fbbf24;
-  text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+  color: #fde68a;
+  text-shadow: 0 0 24px rgba(250, 204, 21, 0.4);
 }
 
 .high-score-display {
@@ -44,16 +44,16 @@
 }
 
 .stat-item {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(8, 12, 26, 0.55);
   padding: 15px;
   border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .stat-label {
   display: block;
   font-size: 12px;
-  color: #99f6e4;
+  color: #c7d2fe;
   opacity: 0.8;
   margin-bottom: 5px;
   text-transform: uppercase;
@@ -64,7 +64,7 @@
   display: block;
   font-size: 28px;
   font-weight: 700;
-  color: #fbbf24;
+  color: #93c5fd;
 }
 
 .stat-value .new-badge {
@@ -72,8 +72,8 @@
   margin-left: 6px;
   font-size: 11px;
   font-weight: 700;
-  color: #fbbf24;
-  background: rgba(251, 191, 36, 0.2);
+  color: #fde68a;
+  background: rgba(250, 204, 21, 0.2);
   padding: 2px 8px;
   border-radius: 8px;
   text-transform: uppercase;
